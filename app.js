@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesList: document.getElementById('messages-list'),
             djMessageForm: document.getElementById('dj-message-form'),
             djMessageInput: document.getElementById('dj-message-input'),
+            commemorativeForm: document.getElementById('commemorative-song-form'),
+            commemorativeNameInput: document.getElementById('commemorative-name-input'),
+            commemorativeWordsInput: document.getElementById('commemorative-words-input'),
+            commemorativeFeedback: document.getElementById('commemorative-feedback'),
         },
         header: {
             listenerCount: document.getElementById('listener-count'),
@@ -103,9 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
         isPlaying: false,
         isInitialized: false,
         lastMessageTimestamp: 0,
+        lastCommemorative: 0,
         songsSinceJingle: 0,
         likes: {},
         tempBoosts: {},
+        commemorativeSongs: [], // List of generated commemorative songs
         // Kalender State
         currentDate: new Date(),
         events: {}, // { 'JJJJ-MM-DD': [{ machine, eventType }] }
@@ -204,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await loadPlaylist();
             loadStateFromLocalStorage();
+            loadCommemorative(); // Load commemorative songs
             setupEventListeners();
             updateWelcomeGreeting();
             updateOfflineStatus();
@@ -822,6 +829,116 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Commemorative Song Functions ---
+    function handleCommemorative(e) {
+        e.preventDefault();
+        const now = Date.now();
+        
+        // Rate limiting - allow one commemorative song every 60 seconds
+        if (now - state.lastCommemorative < 60000) {
+            showCommemorative(t('errorRateLimit').replace('30', '60'), 'error');
+            return;
+        }
+        
+        if (!dom.sidePanel.commemorativeNameInput || !dom.sidePanel.commemorativeWordsInput) return;
+        
+        const name = dom.sidePanel.commemorativeNameInput.value.trim();
+        const words = dom.sidePanel.commemorativeWordsInput.value.trim();
+        
+        if (!name || !words) return;
+
+        state.lastCommemorative = now;
+        createCommemorative(name, words);
+        if (dom.sidePanel.commemorativeForm) dom.sidePanel.commemorativeForm.reset();
+    }
+
+    function createCommemorative(name, words) {
+        // Generate commemorative song data
+        const commemorativeSong = {
+            id: `commemorative-${Date.now()}`,
+            title: `${t('commemorativeSong')} - ${name}`,
+            artist: 'DAREMON Radio ETS',
+            type: 'commemorative',
+            name: name,
+            words: words,
+            created: new Date().toLocaleString(),
+            src: generateCommemorative(name, words) // Generate placeholder audio URL
+        };
+        
+        // Add to commemorative songs list
+        state.commemorativeSongs.unshift(commemorativeSong);
+        state.commemorativeSongs = state.commemorativeSongs.slice(0, 10); // Keep only last 10
+        
+        // Show feedback
+        showCommemorative(t('songCreated', { name }), 'success');
+        
+        // Add to playlist temporarily for next play
+        state.playlist.unshift(commemorativeSong);
+        
+        // Optionally play it next
+        setTimeout(() => {
+            if (!state.isPlaying) {
+                playTrackNow(commemorativeSong);
+            }
+        }, 2000);
+        
+        saveCommemorative();
+    }
+
+    function generateCommemorative(name, words) {
+        // In a real implementation, this would call an AI service or use text-to-speech
+        // For now, we'll create a placeholder that demonstrates the concept
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const duration = 30; // 30 seconds
+        const sampleRate = audioContext.sampleRate;
+        const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+        
+        // Generate a simple melody with the name and words concept
+        for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+            const channelData = buffer.getChannelData(channel);
+            for (let i = 0; i < channelData.length; i++) {
+                // Simple sine wave with variations based on name/words
+                const frequency = 440 + (name.length * 10) + (words.length * 5);
+                channelData[i] = Math.sin(2 * Math.PI * frequency * i / sampleRate) * 0.1;
+            }
+        }
+        
+        // For demo purposes, return a data URL (in reality, this would be an actual audio file)
+        return 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEaAzCJ1O/IfCECHXTE7+OXSQ0PVq7k66RECgkNa7rr3J1WGAg+ltbeZDgDK5LW6chIBCAuZL/u2JdMDgkKa7/q0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDwgGabrq15pLDQcRar3s0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5KDgkKa8Ps0J5K';
+    }
+
+    function showCommemorative(message, type = 'info') {
+        if (!dom.sidePanel.commemorativeFeedback) return;
+        
+        dom.sidePanel.commemorativeFeedback.textContent = message;
+        dom.sidePanel.commemorativeFeedback.className = `commemorative-feedback ${type}`;
+        
+        setTimeout(() => {
+            dom.sidePanel.commemorativeFeedback.textContent = '';
+            dom.sidePanel.commemorativeFeedback.className = 'commemorative-feedback';
+        }, 5000);
+    }
+
+    function saveCommemorative() {
+        try {
+            localStorage.setItem('daremon_commemorative', JSON.stringify(state.commemorativeSongs));
+        } catch (e) {
+            console.warn('Could not save commemorative songs:', e);
+        }
+    }
+
+    function loadCommemorative() {
+        try {
+            const saved = localStorage.getItem('daremon_commemorative');
+            if (saved) {
+                state.commemorativeSongs = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.warn('Could not load commemorative songs:', e);
+            state.commemorativeSongs = [];
+        }
+    }
+
     // --- Kalender Logica ---
     function renderCalendar() {
         if (!dom.calendar.grid || !dom.calendar.header) return;
@@ -971,8 +1088,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.dataset.theme = theme; 
     }
 
+    // --- Commemorative Song Feature ---
+    function initializeCommemorative() {
+        // Check if the section already exists in HTML
+        const existingSection = document.querySelector('[data-i18n-key="commemorativeSongTitle"]');
+        
+        if (!existingSection) {
+            // If not found in HTML, inject it programmatically
+            const djSection = document.querySelector('[data-i18n-key="messageToDJ"]').closest('.content-box');
+            if (djSection) {
+                const commemorativeHTML = `
+                    <section class="content-box">
+                        <h3 data-i18n-key="commemorativeSongTitle"></h3>
+                        <p class="commemorative-description" data-i18n-key="commemorativeDescription"></p>
+                        <form id="commemorative-song-form">
+                            <label for="commemorative-name-input" data-i18n-key="yourName"></label>
+                            <input id="commemorative-name-input" name="name" type="text" maxlength="50" required aria-required="true">
+                            
+                            <label for="commemorative-words-input" data-i18n-key="songWords"></label>
+                            <textarea id="commemorative-words-input" name="words" rows="3" data-i18n-placeholder="songWordsPlaceholder" maxlength="150" required aria-required="true"></textarea>
+                            
+                            <button type="submit" data-i18n-key="createSong"></button>
+                        </form>
+                        <div id="commemorative-feedback" aria-live="polite"></div>
+                    </section>
+                `;
+                djSection.insertAdjacentHTML('afterend', commemorativeHTML);
+                
+                // Apply translations to the newly added elements
+                i18n_apply();
+            }
+        }
+        
+        // Setup commemorative form event listener
+        const commemorativeForm = document.getElementById('commemorative-song-form');
+        if (commemorativeForm) {
+            commemorativeForm.addEventListener('submit', handleCommemorative);
+        }
+    }
+
     // --- Event Listeners Instellen ---
     function setupEventListeners() {
+        // Initialize commemorative feature
+        initializeCommemorative();
+        
         // Speler & Audio
         if (dom.player.playPauseBtn) dom.player.playPauseBtn.addEventListener('click', togglePlayPause);
         if (dom.player.nextBtn) dom.player.nextBtn.addEventListener('click', playNextTrack);
@@ -1016,6 +1175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (dom.sidePanel.djMessageForm) dom.sidePanel.djMessageForm.addEventListener('submit', handleMessageSubmit);
+        if (dom.sidePanel.commemorativeForm) dom.sidePanel.commemorativeForm.addEventListener('submit', handleCommemorative);
         if (dom.errorCloseBtn) dom.errorCloseBtn.addEventListener('click', () => {
             if (dom.errorOverlay) dom.errorOverlay.classList.add('hidden');
         });

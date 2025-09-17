@@ -66,5 +66,13 @@
   "eventDisconnect": "Odłączenie",
   "eventTransport": "Transport",
   "saveBtn": "Zapisz",
-  "cancelBtn": "Anuluj"
+  "cancelBtn": "Anuluj",
+  "commemorativeSong": "Piosenka Pamiątkowa",
+  "commemorativeSongTitle": "Pamiątkowe Radio",
+  "yourName": "Twoje Imię:",
+  "songWords": "Słowa do Piosenki:",
+  "songWordsPlaceholder": "Wpisz kilka słów, które mają pojawić się w Twojej piosence...",
+  "createSong": "Stwórz Piosenkę",
+  "commemorativeDescription": "Wpisz swoje imię i kilka słów, aby stworzyć spersonalizowaną piosenkę dla zabawy lub na pamiątkę!",
+  "songCreated": "🎵 Spersonalizowana piosenka utworzona dla {{name}}! Zostanie odtworzona wkrótce."
 }

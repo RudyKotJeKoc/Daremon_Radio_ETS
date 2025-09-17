@@ -70,6 +70,21 @@
                     </section>
 
                     <section class="content-box">
+                        <h3 data-i18n-key="commemorativeSongTitle"></h3>
+                        <p class="commemorative-description" data-i18n-key="commemorativeDescription"></p>
+                        <form id="commemorative-song-form">
+                            <label for="commemorative-name-input" data-i18n-key="yourName"></label>
+                            <input id="commemorative-name-input" name="name" type="text" maxlength="50" required aria-required="true">
+                            
+                            <label for="commemorative-words-input" data-i18n-key="songWords"></label>
+                            <textarea id="commemorative-words-input" name="words" rows="3" data-i18n-placeholder="songWordsPlaceholder" maxlength="150" required aria-required="true"></textarea>
+                            
+                            <button type="submit" data-i18n-key="createSong"></button>
+                        </form>
+                        <div id="commemorative-feedback" aria-live="polite"></div>
+                    </section>
+
+                    <section class="content-box">
                         <h3 data-i18n-key="changeTheme"></h3>
                         <div class="theme-switcher">
                             <button id="theme-arburg" data-i18n-title="themeArburg" data-i18n-aria-label="themeArburgLabel"></button>

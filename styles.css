@@ -357,3 +357,93 @@ body, #app-container, #main-content, #player-ui, #player-controls, #side-panel, 
     .calendar-day { min-height: 80px; }
 }
 
+/* --- Commemorative Song Styles --- */
+#commemorative-song-form {
+    margin-top: 10px;
+}
+
+#commemorative-song-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: var(--primary-accent);
+    font-weight: bold;
+}
+
+#commemorative-name-input,
+#commemorative-words-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--tertiary-accent);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+#commemorative-name-input:focus,
+#commemorative-words-input:focus {
+    outline: none;
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 5px rgba(0, 136, 120, 0.3);
+}
+
+#commemorative-song-form button[type="submit"] {
+    background: var(--secondary-accent);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+#commemorative-song-form button[type="submit"]:hover:not(:disabled) {
+    background: var(--primary-accent);
+}
+
+#commemorative-song-form button[type="submit"]:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.commemorative-description {
+    font-size: 0.8em;
+    color: #ccc;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.commemorative-feedback {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    text-align: center;
+    transition: opacity 0.3s;
+}
+
+.commemorative-feedback.success {
+    background: rgba(0, 136, 120, 0.2);
+    border: 1px solid var(--primary-accent);
+    color: var(--primary-accent);
+}
+
+.commemorative-feedback.error {
+    background: rgba(255, 69, 69, 0.2);
+    border: 1px solid #ff4545;
+    color: #ff4545;
+}
+
+.commemorative-feedback.info {
+    background: rgba(255, 165, 0, 0.2);
+    border: 1px solid #ffa500;
+    color: #ffa500;
+}
+
