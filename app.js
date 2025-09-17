@@ -1088,8 +1088,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.dataset.theme = theme; 
     }
 
+    // --- Commemorative Song Feature ---
+    function initializeCommemorative() {
+        // Check if the section already exists in HTML
+        const existingSection = document.querySelector('[data-i18n-key="commemorativeSongTitle"]');
+        
+        if (!existingSection) {
+            // If not found in HTML, inject it programmatically
+            const djSection = document.querySelector('[data-i18n-key="messageToDJ"]').closest('.content-box');
+            if (djSection) {
+                const commemorativeHTML = `
+                    <section class="content-box">
+                        <h3 data-i18n-key="commemorativeSongTitle"></h3>
+                        <p class="commemorative-description" data-i18n-key="commemorativeDescription"></p>
+                        <form id="commemorative-song-form">
+                            <label for="commemorative-name-input" data-i18n-key="yourName"></label>
+                            <input id="commemorative-name-input" name="name" type="text" maxlength="50" required aria-required="true">
+                            
+                            <label for="commemorative-words-input" data-i18n-key="songWords"></label>
+                            <textarea id="commemorative-words-input" name="words" rows="3" data-i18n-placeholder="songWordsPlaceholder" maxlength="150" required aria-required="true"></textarea>
+                            
+                            <button type="submit" data-i18n-key="createSong"></button>
+                        </form>
+                        <div id="commemorative-feedback" aria-live="polite"></div>
+                    </section>
+                `;
+                djSection.insertAdjacentHTML('afterend', commemorativeHTML);
+                
+                // Apply translations to the newly added elements
+                i18n_apply();
+            }
+        }
+        
+        // Setup commemorative form event listener
+        const commemorativeForm = document.getElementById('commemorative-song-form');
+        if (commemorativeForm) {
+            commemorativeForm.addEventListener('submit', handleCommemorative);
+        }
+    }
+
     // --- Event Listeners Instellen ---
     function setupEventListeners() {
+        // Initialize commemorative feature
+        initializeCommemorative();
+        
         // Speler & Audio
         if (dom.player.playPauseBtn) dom.player.playPauseBtn.addEventListener('click', togglePlayPause);
         if (dom.player.nextBtn) dom.player.nextBtn.addEventListener('click', playNextTrack);
