@@ -66,5 +66,13 @@
   "eventDisconnect": "Loskoppeling",
   "eventTransport": "Transport",
   "saveBtn": "Opslaan",
-  "cancelBtn": "Annuleren"
+  "cancelBtn": "Annuleren",
+  "commemorativeSong": "Pamiątkowa Piosenka",
+  "commemorativeSongTitle": "Pamiątkowe Radio",
+  "yourName": "Je Naam:",
+  "songWords": "Woorden voor Lied:",
+  "songWordsPlaceholder": "Voer enkele woorden in die in je lied moeten voorkomen...",
+  "createSong": "Creëer Lied",
+  "commemorativeDescription": "Voer je naam en enkele woorden in om een persoonlijk lied te maken voor de pret of als aandenken!",
+  "songCreated": "🎵 Persoonlijk lied gemaakt voor {{name}}! Het zal binnenkort worden afgespeeld."
 }
